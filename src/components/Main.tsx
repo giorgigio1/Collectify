@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import Modal2 from "./LoginModal";
+import { IoLogoDribbble } from "react-icons/io5";
 import {
   Container,
   Row,
@@ -10,16 +12,18 @@ import {
   Button,
   Card,
   Modal,
-} from 'react-bootstrap';
+} from "react-bootstrap";
+import MainHeader from "./MainHeader";
 
-function App() {
+const Main = () => {
   const [showAddCollectionModal, setShowAddCollectionModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [collections, setCollections] = useState([
-    { id: 1, name: 'Collection 1', items: ['Item 1', 'Item 2'] },
-    { id: 2, name: 'Collection 2', items: ['Item 3', 'Item 4'] },
+    { id: 1, name: "Collection 1", items: ["Item 1", "Item 2"] },
+    { id: 2, name: "Collection 2", items: ["Item 3", "Item 4"] },
   ]);
-  const [newCollectionName, setNewCollectionName] = useState('');
-  const [newItemName, setNewItemName] = useState('');
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [newItemName, setNewItemName] = useState("");
 
   const handleAddCollection = () => {
     if (newCollectionName) {
@@ -27,7 +31,7 @@ function App() {
         ...prevCollections,
         { id: Date.now(), name: newCollectionName, items: [] },
       ]);
-      setNewCollectionName('');
+      setNewCollectionName("");
       setShowAddCollectionModal(false);
     }
   };
@@ -41,12 +45,16 @@ function App() {
             : collection
         )
       );
-      setNewItemName('');
+      setNewItemName("");
     }
   };
 
   return (
     <div>
+      {/* <button onClick={() => setShowModal(true)}>show modal</button>
+      {showModal && <Modal2 />}
+      <IoLogoDribbble style={{ width: "100px", height: "100px", color:"blue"}} /> */}
+      <MainHeader />
       {/* Header */}
       <Navbar bg="light" expand="lg">
         {/* ... (unchanged) */}
@@ -94,7 +102,10 @@ function App() {
         </Row>
 
         {/* Add Collection Modal */}
-        <Modal show={showAddCollectionModal} onHide={() => setShowAddCollectionModal(false)}>
+        <Modal
+          show={showAddCollectionModal}
+          onHide={() => setShowAddCollectionModal(false)}
+        >
           <Modal.Header closeButton>
             <Modal.Title>Add Collection</Modal.Title>
           </Modal.Header>
@@ -112,7 +123,10 @@ function App() {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowAddCollectionModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAddCollectionModal(false)}
+            >
               Close
             </Button>
             <Button variant="primary" onClick={handleAddCollection}>
@@ -123,11 +137,9 @@ function App() {
       </Container>
 
       {/* Footer */}
-      <Container>
-        {/* ... (unchanged) */}
-      </Container>
+      <Container>{/* ... (unchanged) */}</Container>
     </div>
   );
 }
 
-export default App;
+export default Main;

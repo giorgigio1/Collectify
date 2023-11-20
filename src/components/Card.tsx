@@ -7,7 +7,11 @@ const Card = () => {
         <div className="row">
           <div className="col-lg-4 col-md-6 col-sm-12">
             <div className="card">
-              <img src="https://via.placeholder.com/300x200" className="card-img-top" alt="" />
+              <img
+                src="https://via.placeholder.com/300x200"
+                className="card-img-top"
+                alt=""
+              />
               <div className="card-body">
                 <h5 className="card-title">Card Title</h5>
                 <p className="card-text">

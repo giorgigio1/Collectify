@@ -19,21 +19,29 @@ const Header = () => {
 
   return (
     <header
-      className="d-flex justify-content-end align-items-center bg-light"
+      className="d-flex justify-content-between align-items-center bg-light"
       style={{ height: "80px" }}
     >
-      <button className="me-3">
-        Hello, <span className="text-primary">{getUserByToken()}</span>!
-      </button>
       <button
-        className="me-5 text-primary"
-        onClick={() => {
-          localStorage.removeItem("token");
-          navigate("/login", { replace: true });
-        }}
+        className="ms-5 text-primary border-black"
+        onClick={() => navigate("/main")}
       >
-        Log out
+        Go to main page
       </button>
+      <div>
+        <button className="me-3">
+          Hello, <span className="text-primary">{getUserByToken()}</span>!
+        </button>
+        <button
+          className="me-5 text-primary"
+          onClick={() => {
+            localStorage.removeItem("token");
+            navigate("/login", { replace: true });
+          }}
+        >
+          Log out
+        </button>
+      </div>
     </header>
   );
 };

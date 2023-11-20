@@ -11,6 +11,7 @@ type UserData = {
   createdAt: string;
   status: string;
   _id: string;
+  role: string;
 };
 
 type UserState = {
@@ -134,6 +135,7 @@ const UserManagementTable: React.FC = () => {
               <th>Last login time</th>
               <th>Registration time</th>
               <th>Status</th>
+              <th>Role</th>
             </tr>
           </thead>
           <tbody>
@@ -163,6 +165,7 @@ const UserManagementTable: React.FC = () => {
                 <td>{new Date(user.lastLogin).toLocaleString()}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
                 <td>{user.status}</td>
+                <td>{user.role}</td>
               </tr>
             ))}
           </tbody>

@@ -9,7 +9,8 @@ import Login from "./components/Login";
 import UserManagementTable from "./components/UserManagementTable";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Card from "./components/Card";
-import Head from "./components/Head";
+import Head from "./components/MainHeader";
+import Main from "./components/Main";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/user-management" element={<UserManagementTable />} />
         </Route>
         <Route path="/*" element={<Navigate to="/login" />} />
+        <Route path="/main" element={<Main />} />
         <Route path="/card" element={<Card />} />
         <Route path="/head" element={<Head />} />
       </Routes>
