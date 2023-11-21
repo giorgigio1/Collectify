@@ -29,7 +29,7 @@ const UserManagementTable: React.FC = () => {
     data: [],
   });
 
-  const [selcetedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchUsers();
@@ -78,7 +78,7 @@ const UserManagementTable: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      await baseApi.post(url, selcetedIds, {
+      await baseApi.post(url, selectedIds, {
         headers: {
           Authorization: token,
         },
@@ -86,12 +86,36 @@ const UserManagementTable: React.FC = () => {
 
       const decodeToken = jwtDecode<{ userId: string }>(token!);
 
-      if (whatToDo === "block" && selcetedIds.includes(decodeToken.userId)) {
+      if (whatToDo === "block" && selectedIds.includes(decodeToken.userId)) {
         localStorage.removeItem("token");
         window.location.href = "/login";
         return;
       }
 
+      fetchUsers();
+      setSelectedIds([]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAdminOrUser = async (whatToDo: "admin" | "user") => {
+    let url =
+      whatToDo === "admin"
+        ? "user/make-admin"
+        : whatToDo === "user"
+        ? "user/remove-admin"
+        : "";
+
+    const token = localStorage.getItem("token");
+
+    try {
+      await baseApi.post(url, selectedIds, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      
       fetchUsers();
       setSelectedIds([]);
     } catch (error) {
@@ -111,7 +135,10 @@ const UserManagementTable: React.FC = () => {
     <div>
       <Header />
       <div style={{ width: "90%", margin: "0 auto" }}>
-        <Toolbar onBlockUser={handleBlockOrUnblockUsers} />
+        <Toolbar
+          onBlockUser={handleBlockOrUnblockUsers}
+          onAdminOrUser={handleAdminOrUser}
+        />
         <table className="table table-bordered">
           <thead>
             <tr>
@@ -119,7 +146,7 @@ const UserManagementTable: React.FC = () => {
                 {" "}
                 <input
                   type="checkbox"
-                  checked={selcetedIds.length === user.data.length}
+                  checked={selectedIds.length === user.data.length}
                   onChange={(e) => {
                     const { checked } = e.target;
                     if (checked) {
@@ -147,7 +174,7 @@ const UserManagementTable: React.FC = () => {
                 <td>
                   <input
                     type="checkbox"
-                    checked={selcetedIds.includes(user._id)}
+                    checked={selectedIds.includes(user._id)}
                     onChange={(e) => {
                       const { checked } = e.target;
                       if (checked) {

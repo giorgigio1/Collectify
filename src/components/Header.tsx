@@ -24,7 +24,7 @@ const Header = () => {
     >
       <button
         className="ms-5 text-primary border-black"
-        onClick={() => navigate("/main")}
+        onClick={() => navigate("/")}
       >
         Go to main page
       </button>
@@ -36,7 +36,7 @@ const Header = () => {
           className="me-5 text-primary"
           onClick={() => {
             localStorage.removeItem("token");
-            navigate("/login", { replace: true });
+            navigate("/", { replace: true });
           }}
         >
           Log out

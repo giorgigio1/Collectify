@@ -9,14 +9,12 @@ import { Button, Modal } from "react-bootstrap";
 interface RegisterModalProps {
   registerModalIsOpen: Boolean;
   setRegisterModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  loginModalIsOpen: Boolean;
   setLoginModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({
   registerModalIsOpen,
   setRegisterModalIsOpen,
-  loginModalIsOpen,
   setLoginModalIsOpen,
 }) => {
   const navigate = useNavigate();
@@ -40,7 +38,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
               const { token } = response.data;
 
               localStorage.setItem("token", token);
-              navigate("/user-management");
+              navigate("/admin");
             } catch (error) {
               if (error instanceof AxiosError) {
                 setFieldError("email", error.response?.data.message);

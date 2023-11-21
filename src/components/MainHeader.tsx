@@ -53,7 +53,6 @@ const MainHeader: React.FC = () => {
             </Nav.Link>
             {registerModalIsOpen && (
               <RegisterModal
-                loginModalIsOpen={loginModalIsOpen}
                 setLoginModalIsOpen={setLoginModalIsOpen}
                 registerModalIsOpen={registerModalIsOpen}
                 setRegisterModalIsOpen={setRegisterModalIsOpen}
@@ -62,13 +61,16 @@ const MainHeader: React.FC = () => {
             <Nav.Link
               onClick={() => {
                 localStorage.removeItem("token");
-                navigate("/main");
+                navigate("/");
               }}
             >
               Logout
             </Nav.Link>
             <Nav.Link href="#">Language</Nav.Link>
             <Nav.Link href="#">Theme</Nav.Link>
+            <Nav.Link className="border" as={Link} to="/admin">
+              Go to admin panel
+            </Nav.Link>
           </Nav>
         </div>
       </Navbar.Collapse>

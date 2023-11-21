@@ -1,10 +1,13 @@
 import { BsLockFill, BsFillUnlockFill, BsFillTrashFill } from "react-icons/bs";
+import { RiAdminLine } from "react-icons/ri";
+import { GrUserAdmin } from "react-icons/gr";
 
-const Toolbar = ({
-  onBlockUser,
-}: {
+interface Props {
   onBlockUser: (whatToDo: "block" | "unblock" | "delete") => void;
-}) => {
+  onAdminOrUser: (whatToDo: "admin" | "user") => void;
+}
+
+const Toolbar = ({ onBlockUser, onAdminOrUser }: Props) => {
   return (
     <figure className="d-flex py-2">
       <button
@@ -19,6 +22,14 @@ const Toolbar = ({
       </button>
       <button onClick={() => onBlockUser("delete")} className="p-2">
         <BsFillTrashFill style={{ fontSize: "30px", cursor: "pointer" }} />
+      </button>
+      <button onClick={() => onAdminOrUser("admin")} className="ms-5">
+        <RiAdminLine style={{ fontSize: "30px", cursor: "pointer" }} />
+        Give Admin
+      </button>
+      <button onClick={() => onAdminOrUser("user")} className="ms-2">
+        <GrUserAdmin style={{ fontSize: "30px", cursor: "pointer" }} />
+        Remove Admin
       </button>
     </figure>
   );

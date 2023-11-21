@@ -8,23 +8,19 @@ import Registration from "./components/Registration";
 import Login from "./components/Login";
 import UserManagementTable from "./components/UserManagementTable";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import Card from "./components/Card";
-import Head from "./components/MainHeader";
 import Main from "./components/Main";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/register" element={<Registration />} />
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/register" element={<Registration />} /> */}
+        {/* <Route path="/login" element={<Login />} /> */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/user-management" element={<UserManagementTable />} />
+          <Route path="/admin" element={<UserManagementTable />} />
         </Route>
-        <Route path="/*" element={<Navigate to="/login" />} />
-        <Route path="/main" element={<Main />} />
-        <Route path="/card" element={<Card />} />
-        <Route path="/head" element={<Head />} />
+        {/* <Route path="/*" element={<Navigate to="/login" />} /> */}
+        <Route path="/" element={<Main />} />
       </Routes>
     </Router>
   );

@@ -37,7 +37,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
               const response = await baseApi.post("auth/login", values);
               const { token } = response.data;
               localStorage.setItem("token", token);
-              navigate("/user-management");
+              navigate("/admin");
             } catch (error) {
               setFieldError("password", "Incorrect email or password.");
               console.error("Login error:", error);

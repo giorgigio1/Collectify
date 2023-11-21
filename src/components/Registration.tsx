@@ -23,7 +23,7 @@ const Registration: React.FC = () => {
             const { token } = response.data;
 
             localStorage.setItem("token", token);
-            navigate("/user-management");
+            navigate("/admin");
           } catch (error) {
             if (error instanceof AxiosError) {
               setFieldError("email", error.response?.data.message);
