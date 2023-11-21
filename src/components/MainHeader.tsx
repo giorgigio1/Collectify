@@ -4,6 +4,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoLogoDribbble } from "react-icons/io5";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
+import jwt_decode from "jwt-decode";
+
+type TokenData = { exp: number; userId: string; name: string };
+
+const getUserByToken = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return null;
+  }
+
+  const decoded = jwt_decode<TokenData>(token);
+
+  return decoded.name;
+};
 
 const MainHeader: React.FC = () => {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState<boolean>(false);
@@ -13,20 +27,25 @@ const MainHeader: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar className="px-5" bg="light" expand="lg">
       <Navbar.Brand as={Link} to="/">
         <IoLogoDribbble
-          style={{ width: "60px", height: "60px", color: "blue" }}
+          style={{
+            width: "60px",
+            height: "60px",
+            color: "blue",
+            cursor: "pointer",
+          }}
         />
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between w-100">
           <Nav className="mr-auto">
-            <Nav.Link as={Link} to="/main">
+            <Nav.Link as={Link} to="/">
               Home
             </Nav.Link>
-            <Nav.Link as={Link} to="/dashboard">
+            <Nav.Link as={Link} to="/">
               Dashboard
             </Nav.Link>
             <NavDropdown title="Collections" id="basic-nav-dropdown">
@@ -58,19 +77,26 @@ const MainHeader: React.FC = () => {
                 setRegisterModalIsOpen={setRegisterModalIsOpen}
               />
             )}
-            <Nav.Link
-              onClick={() => {
-                localStorage.removeItem("token");
-                navigate("/");
-              }}
-            >
-              Logout
-            </Nav.Link>
-            <Nav.Link href="#">Language</Nav.Link>
-            <Nav.Link href="#">Theme</Nav.Link>
-            <Nav.Link className="border" as={Link} to="/admin">
-              Go to admin panel
-            </Nav.Link>
+            {getUserByToken() && (
+              <div className="d-flex">
+                <Nav.Link className="border" as={Link} to="/admin">
+                  Go to admin panel
+                </Nav.Link>
+                <button className="mx-3 border border-primary rounded text-primary">
+                  Hello,{" "}
+                  <span className="text-primary">{getUserByToken()}</span>!
+                </button>
+                <button
+                  className="me-5 text-primary border border-primary rounded"
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    navigate("/", { replace: true });
+                  }}
+                >
+                  Log out
+                </button>
+              </div>
+            )}
           </Nav>
         </div>
       </Navbar.Collapse>
