@@ -1,58 +1,127 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Modal2 from "./LoginModal";
+import { IoLogoDribbble } from "react-icons/io5";
 import {
   Container,
   Row,
   Col,
   Navbar,
+  Nav,
   Form,
+  FormControl,
   Button,
   Card,
   Modal,
 } from "react-bootstrap";
+import { baseApi } from "../baseAPI";
+import MainHeader from "./MainHeader";
 
 const Collection = () => {
   const [showAddCollectionModal, setShowAddCollectionModal] = useState(false);
-  const [collections, setCollections] = useState([
-    { id: 1, name: "Collection 1", items: ["Item 1", "Item 2"] },
-    { id: 2, name: "Collection 2", items: ["Item 3", "Item 4"] },
-  ]);
+  const [showAddCardModal, setShowAddCardModal] = useState(false);
+  const [collections, setCollections] = useState<
+    {
+      _id: string;
+      name: string;
+      cards: {
+        name: string;
+        description: string;
+        topic: string;
+        image: string;
+        author: string;
+        collectionId: string;
+      }[];
+    }[]
+  >([]);
   const [newCollectionName, setNewCollectionName] = useState("");
   const [newItemName, setNewItemName] = useState("");
+  const [currentCollectionId, setCurrentCollectionid] = useState("");
 
-  const handleAddCollection = () => {
+  const [formData, setFormData] = useState({
+    newCollectionName: "",
+    newCollectionDescription: "",
+    newCollectionTopic: "",
+    newCollectionImage: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [id]: value,
+    }));
+  };
+
+  const handleAddCollection = async () => {
     if (newCollectionName) {
-      setCollections((prevCollections) => [
-        ...prevCollections,
-        { id: Date.now(), name: newCollectionName, items: [] },
-      ]);
+      const response = await baseApi.post(
+        "collection",
+        { name: newCollectionName },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      setCollections([...collections, response.data]);
       setNewCollectionName("");
       setShowAddCollectionModal(false);
     }
   };
 
-  const handleAddItem = (collectionId: any) => {
-    if (newItemName) {
-      setCollections((prevCollections) =>
-        prevCollections.map((collection) =>
-          collection.id === collectionId
-            ? { ...collection, items: [...collection.items, newItemName] }
-            : collection
-        )
-      );
-      setNewItemName("");
-    }
+  const handleCardModal = (id: string) => {
+    setCurrentCollectionid(id);
+    setShowAddCardModal(true);
   };
+
+  const handleAddCard = async () => {
+    const response = await baseApi.post(
+      "card",
+      {
+        name: formData.newCollectionName,
+        image: formData.newCollectionImage,
+        description: formData.newCollectionDescription,
+        topic: formData.newCollectionTopic,
+        collectionId: currentCollectionId,
+      },
+      {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    const newCollections = collections.map((collection) =>
+      collection._id === response.data._id ? response.data : collection
+    );
+    setCollections(newCollections);
+  };
+
+  useEffect(() => {
+    const fetchCollections = async () => {
+      const response = await baseApi.get("collection", {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      setCollections(response.data);
+    };
+    fetchCollections();
+  }, []);
 
   return (
     <div>
-      <Navbar bg="light" expand="lg"></Navbar>
+      {/* Header */}
+      <Navbar bg="light" expand="lg">
+        {/* ... (unchanged) */}
+      </Navbar>
+
+      {/* Body */}
       <Container className="mt-3">
         <Row>
           <Col>
             <h2>Collections</h2>
-            {
-                
-            }
 
             <Button
               variant="outline-primary"
@@ -64,20 +133,26 @@ const Collection = () => {
 
             <div className="card-deck">
               {collections.map((collection) => (
-                <Card key={collection.id}>
+                <Card key={collection._id}>
+                  {/* Collection Header */}
                   <Card.Header>{collection.name}</Card.Header>
+
+                  {/* Collection Body - Items */}
                   <Card.Body>
                     <ul>
-                      {collection.items.map((item, index) => (
-                        <li key={index}>{item}</li>
+                      {collection.cards.map((item, index) => (
+                        <>
+                          <li key={index}>{item.name}</li>
+                          <img src={item.image} alt="item img" />
+                        </>
                       ))}
                     </ul>
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => handleAddItem(collection.id)}
+                      onClick={() => handleCardModal(collection._id)}
                     >
-                      Add Item
+                      Add Card
                     </Button>
                   </Card.Body>
                 </Card>
@@ -116,6 +191,65 @@ const Collection = () => {
             </Button>
             <Button variant="primary" onClick={handleAddCollection}>
               Add Collection
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal
+          show={showAddCardModal}
+          onHide={() => setShowAddCardModal(false)}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Add Card</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="newCollectionName">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter card name"
+                  value={formData.newCollectionName}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="newCollectionDescription">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter card description"
+                  value={formData.newCollectionDescription}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="newCollectionTopic">
+                <Form.Label>Topic</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter card topic"
+                  value={formData.newCollectionTopic}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="newCollectionImage">
+                <Form.Label>Image</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter card image"
+                  value={formData.newCollectionImage}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAddCardModal(false)}
+            >
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleAddCard}>
+              Add Card
             </Button>
           </Modal.Footer>
         </Modal>

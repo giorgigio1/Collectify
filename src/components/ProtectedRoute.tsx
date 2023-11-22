@@ -1,27 +1,40 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { baseApi } from "../baseAPI";
 import jwt_decode from "jwt-decode";
 
 export const ProtectedRoute = () => {
-  const user = localStorage.getItem("token");
+  const navigate = useNavigate();
 
-  if (!user) {
-    return <Navigate to="/" />;
-  }
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        const userToken = localStorage.getItem("token");
 
-  if (user) {
-    try {
-      const decoded = jwt_decode<{ exp: number; status: "blocked" | "active" }>(
-        user
-      );
-      if (decoded.exp < Date.now() / 1000 || decoded.status === "blocked") {
-        localStorage.removeItem("token");
-        return <Navigate to="/" state={{ isBlocked: true }} />;
+        const decoded = jwt_decode<{
+          exp: number;
+          userId: string;
+          status: "blocked" | "active";
+        }>(userToken || "");
+
+        console.log(decoded.userId, "id");
+        const currentUser = await baseApi.get("user/fetch-user", {
+          headers: {
+            Authorization: userToken,
+          },
+        });
+        console.log(currentUser, "es");
+        if (currentUser.data.role !== "admin") {
+          navigate("/");
+        }
+      } catch (err) {
+        navigate("/");
       }
-    } catch (error) {
-      localStorage.removeItem("token");
-      return <Navigate to="/" />;
-    }
-  }
+    };
+    checkRole();
+
+    return;
+  }, [navigate]);
 
   return <Outlet />;
 };
