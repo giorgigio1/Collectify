@@ -5,7 +5,7 @@ import { baseApi } from "../baseAPI";
 import jwtDecode from "jwt-decode";
 
 type UserData = {
-  fullname: string;
+  fullName: string;
   email: string;
   lastLogin: string;
   createdAt: string;
@@ -115,7 +115,7 @@ const UserManagementTable: React.FC = () => {
           Authorization: token,
         },
       });
-      
+
       fetchUsers();
       setSelectedIds([]);
     } catch (error) {
@@ -187,7 +187,7 @@ const UserManagementTable: React.FC = () => {
                     }}
                   />
                 </td>
-                <td>{user.fullname}</td>
+                <td>{user.fullName}</td>
                 <td>{user.email}</td>
                 <td>{new Date(user.lastLogin).toLocaleString()}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>

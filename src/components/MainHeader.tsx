@@ -91,6 +91,7 @@ const MainHeader: React.FC = () => {
                   onClick={() => {
                     localStorage.removeItem("token");
                     navigate("/", { replace: true });
+                    window.location.reload();
                   }}
                 >
                   Log out

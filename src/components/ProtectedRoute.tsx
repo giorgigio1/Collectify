@@ -17,13 +17,11 @@ export const ProtectedRoute = () => {
           status: "blocked" | "active";
         }>(userToken || "");
 
-        console.log(decoded.userId, "id");
         const currentUser = await baseApi.get("user/fetch-user", {
           headers: {
             Authorization: userToken,
           },
         });
-        console.log(currentUser, "es");
         if (currentUser.data.role !== "admin") {
           navigate("/");
         }

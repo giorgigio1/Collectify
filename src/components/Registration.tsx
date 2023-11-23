@@ -13,7 +13,7 @@ const Registration: React.FC = () => {
       <h2>Registration</h2>
       <Formik
         initialValues={{
-          fullname: "",
+          fullName: "",
           email: "",
           password: "",
         }}
@@ -37,9 +37,9 @@ const Registration: React.FC = () => {
         <Form>
           <div className="form-group">
             <label>Name</label>
-            <Field type="text" name="fullname" className="form-control" />
+            <Field type="text" name="fullName" className="form-control" />
             <ErrorMessage
-              name="fullname"
+              name="fullName"
               component="span"
               className="text-danger"
             />

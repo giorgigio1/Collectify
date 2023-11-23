@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Modal2 from "./LoginModal";
-import { IoLogoDribbble } from "react-icons/io5";
 import {
   Container,
   Row,
   Col,
   Navbar,
-  Nav,
   Form,
-  FormControl,
   Button,
   Card,
   Modal,
 } from "react-bootstrap";
 import { baseApi } from "../baseAPI";
+
 import MainHeader from "./MainHeader";
 
 const Collection = () => {
@@ -23,7 +20,12 @@ const Collection = () => {
     {
       _id: string;
       name: string;
+      author: {
+        _id: string;
+        fullName: string;
+      };
       cards: {
+        _id: string;
         name: string;
         description: string;
         topic: string;
@@ -34,8 +36,32 @@ const Collection = () => {
     }[]
   >([]);
   const [newCollectionName, setNewCollectionName] = useState("");
-  const [newItemName, setNewItemName] = useState("");
   const [currentCollectionId, setCurrentCollectionid] = useState("");
+  const [currentUser, setCurrentUser] = useState<
+    { _id: string; role: string } | undefined
+  >(undefined);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userToken = localStorage.getItem("token");
+        if (userToken) {
+          const response = await baseApi.get("user/fetch-user", {
+            headers: {
+              Authorization: userToken,
+            },
+          });
+
+          setCurrentUser(response.data);
+        }
+      } catch (error) {
+        // Handle errors
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const [formData, setFormData] = useState({
     newCollectionName: "",
@@ -74,7 +100,6 @@ const Collection = () => {
     setCurrentCollectionid(id);
     setShowAddCardModal(true);
   };
-
   const handleAddCard = async () => {
     const response = await baseApi.post(
       "card",
@@ -96,20 +121,61 @@ const Collection = () => {
     );
     setCollections(newCollections);
   };
+  const handleDeleteCollection = async (collectionId: string) => {
+    try {
+      const newCollections = collections.filter(
+        (collection) => collection._id !== collectionId
+      );
+      setCollections(newCollections);
 
-  useEffect(() => {
-    const fetchCollections = async () => {
-      const response = await baseApi.get("collection", {
+      await baseApi.delete(`collection/${collectionId}`, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
       });
+    } catch (err) {
+      throw new Error("Something went wrong");
+    }
+  };
+  const handleDeleteCard = async (cardId: string, collectionId: string) => {
+    try {
+      const newCollections = collections.map((collection) => {
+        if (collection._id === collectionId) {
+          return {
+            ...collection,
+            cards: collection.cards.filter((card) => card._id !== cardId),
+          };
+        }
+        return collection;
+      });
+      setCollections(newCollections);
 
-      setCollections(response.data);
+      await baseApi.delete(`card/${cardId}`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+    } catch (err) {
+      throw new Error("Something went wrong");
+    }
+  };
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await baseApi.get("collection", {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+
+        setCollections(response.data);
+      } catch (err) {
+        throw new Error("Something went wrong");
+      }
     };
+
     fetchCollections();
   }, []);
-
   return (
     <div>
       {/* Header */}
@@ -123,37 +189,63 @@ const Collection = () => {
           <Col>
             <h2>Collections</h2>
 
-            <Button
-              variant="outline-primary"
-              className="mb-3"
-              onClick={() => setShowAddCollectionModal(true)}
-            >
-              Add Collection
-            </Button>
+            {currentUser ? (
+              <Button
+                variant="outline-primary"
+                className="mb-3"
+                onClick={() => setShowAddCollectionModal(true)}
+              >
+                Add Collection
+              </Button>
+            ) : null}
 
             <div className="card-deck">
               {collections.map((collection) => (
                 <Card key={collection._id}>
                   {/* Collection Header */}
-                  <Card.Header>{collection.name}</Card.Header>
+                  <Card.Header>
+                    {collection.name}
+                    {collection.author._id === currentUser?._id ||
+                    currentUser?.role === "admin" ? (
+                      <Button
+                        onClick={() => handleDeleteCollection(collection._id)}
+                      >
+                        delete collection
+                      </Button>
+                    ) : null}
+                    &nbsp;{collection.author.fullName}
+                  </Card.Header>
 
                   {/* Collection Body - Items */}
                   <Card.Body>
                     <ul>
                       {collection.cards.map((item, index) => (
-                        <>
-                          <li key={index}>{item.name}</li>
+                        <div key={item._id}>
+                          {collection.author._id === currentUser?._id ||
+                          currentUser?.role === "admin" ? (
+                            <Button
+                              onClick={() =>
+                                handleDeleteCard(item._id, collection._id)
+                              }
+                            >
+                              delete collection
+                            </Button>
+                          ) : null}
+                          <li>{item.name}</li>
                           <img src={item.image} alt="item img" />
-                        </>
+                        </div>
                       ))}
                     </ul>
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => handleCardModal(collection._id)}
-                    >
-                      Add Card
-                    </Button>
+                    {collection.author._id === currentUser?._id ||
+                    currentUser?.role === "admin" ? (
+                      <Button
+                        variant="outline-secondary"
+                        size="sm"
+                        onClick={() => handleCardModal(collection._id)}
+                      >
+                        Add Card
+                      </Button>
+                    ) : null}
                   </Card.Body>
                 </Card>
               ))}
