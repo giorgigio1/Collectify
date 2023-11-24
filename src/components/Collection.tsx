@@ -10,8 +10,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import { baseApi } from "../baseAPI";
-
-import MainHeader from "./MainHeader";
+import CardItem from "./Card";
 
 const Collection = () => {
   const [showAddCollectionModal, setShowAddCollectionModal] = useState(false);
@@ -55,7 +54,6 @@ const Collection = () => {
           setCurrentUser(response.data);
         }
       } catch (error) {
-        // Handle errors
         console.error("Error fetching user:", error);
       }
     };
@@ -178,17 +176,12 @@ const Collection = () => {
   }, []);
   return (
     <div>
-      {/* Header */}
       <Navbar bg="light" expand="lg">
-        {/* ... (unchanged) */}
       </Navbar>
-
-      {/* Body */}
       <Container className="mt-3">
         <Row>
           <Col>
             <h2>Collections</h2>
-
             {currentUser ? (
               <Button
                 variant="outline-primary"
@@ -198,44 +191,41 @@ const Collection = () => {
                 Add Collection
               </Button>
             ) : null}
-
             <div className="card-deck">
               {collections.map((collection) => (
                 <Card key={collection._id}>
-                  {/* Collection Header */}
                   <Card.Header>
                     {collection.name}
                     {collection.author._id === currentUser?._id ||
                     currentUser?.role === "admin" ? (
                       <Button
-                        onClick={() => handleDeleteCollection(collection._id)}
+                      className="mx-5"
+                      onClick={() => handleDeleteCollection(collection._id)}
                       >
-                        delete collection
+                        Delete collection
                       </Button>
                     ) : null}
-                    &nbsp;{collection.author.fullName}
+                    {" Created by " + collection.author.fullName}
                   </Card.Header>
-
-                  {/* Collection Body - Items */}
-                  <Card.Body>
-                    <ul>
+                  <Card.Body className="">
+                    <div>
                       {collection.cards.map((item, index) => (
-                        <div key={item._id}>
+                        <div className="my-2" key={item._id}>
+                          <CardItem item={item} />
                           {collection.author._id === currentUser?._id ||
                           currentUser?.role === "admin" ? (
                             <Button
+                              className="ms-2 mt-2"
                               onClick={() =>
                                 handleDeleteCard(item._id, collection._id)
                               }
                             >
-                              delete collection
+                              Delete item
                             </Button>
                           ) : null}
-                          <li>{item.name}</li>
-                          <img src={item.image} alt="item img" />
                         </div>
                       ))}
-                    </ul>
+                    </div>
                     {collection.author._id === currentUser?._id ||
                     currentUser?.role === "admin" ? (
                       <Button
@@ -252,8 +242,6 @@ const Collection = () => {
             </div>
           </Col>
         </Row>
-
-        {/* Add Collection Modal */}
         <Modal
           show={showAddCollectionModal}
           onHide={() => setShowAddCollectionModal(false)}
@@ -340,15 +328,15 @@ const Collection = () => {
             >
               Close
             </Button>
-            <Button variant="primary" onClick={handleAddCard}>
+            <Button  variant="primary" onClick={() => {
+              handleAddCard();
+              setShowAddCardModal(false);
+            }}>
               Add Card
             </Button>
           </Modal.Footer>
         </Modal>
       </Container>
-
-      {/* Footer */}
-      <Container>{/* ... (unchanged) */}</Container>
     </div>
   );
 };

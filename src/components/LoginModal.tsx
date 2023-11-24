@@ -15,7 +15,6 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({
   loginModalIsOpen,
   setLoginModalIsOpen,
-  registerModalIsOpen,
   setRegisterModalIsOpen,
 }) => {
   const { state } = useLocation();
@@ -38,6 +37,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
               const { token } = response.data;
               localStorage.setItem("token", token);
               navigate("/admin");
+              setLoginModalIsOpen(false);
             } catch (error) {
               setFieldError("password", "Incorrect email or password.");
               console.error("Login error:", error);

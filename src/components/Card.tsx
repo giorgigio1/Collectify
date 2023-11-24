@@ -1,6 +1,4 @@
-import React from "react";
-
-const Card = () => {
+const Card = ({ item }: any) => {
   return (
     <div>
       <div className="container">
@@ -8,21 +6,27 @@ const Card = () => {
           <div className="col-lg-4 col-md-6 col-sm-12">
             <div className="card">
               <img
-                src="https://via.placeholder.com/300x200"
+                src={item.image}
                 className="card-img-top"
                 alt=""
+                style={{ width: "100%", height: "200px", objectFit: "cover" }}
               />
               <div className="card-body">
-                <h5 className="card-title">Card Title</h5>
-                <p className="card-text">
-                  This is a description of the card. You can add more details
-                  here.
-                </p>
+                <h5 className="card-title">{item.name}</h5>
+                <p className="card-text">{item.description}</p>
               </div>
               <div className="card-footer">
                 <div className="d-flex justify-content-between">
-                  <button className="btn btn-outline-primary">Like</button>
-                  <button className="btn btn-outline-secondary">
+                  <button
+                    onClick={() => alert("Not working yet")}
+                    className="btn btn-outline-primary"
+                  >
+                    Like
+                  </button>
+                  <button
+                    onClick={() => alert("Not working yet")}
+                    className="btn btn-outline-secondary"
+                  >
                     Comments
                   </button>
                 </div>

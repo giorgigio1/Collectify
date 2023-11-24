@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { IoLogoDribbble } from "react-icons/io5";
 import LoginModal from "./LoginModal";
@@ -48,14 +48,6 @@ const MainHeader: React.FC = () => {
             <Nav.Link as={Link} to="/">
               Dashboard
             </Nav.Link>
-            <NavDropdown title="Collections" id="basic-nav-dropdown">
-              <NavDropdown.Item as={Link} to="/collection/1">
-                Collection 1
-              </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/collection/2">
-                Collection 2
-              </NavDropdown.Item>
-            </NavDropdown>
           </Nav>
           <Nav>
             <Nav.Link onClick={() => setLoginModalIsOpen(true)}>Login</Nav.Link>
